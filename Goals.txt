@@ -1,0 +1,75 @@
+1. The New Architecture: Conversation "Rooms"
+We now have two frontend applications:
+
+Customer UI (React): A simple chat box the customer opens.
+
+Agent UI (React): The full-featured portal for the agent.
+
+When a chat is "live," both the customer and the agent will be connected to the same shared chat room. In STOMP/WebSocket terms, this is a shared topic.
+
+Instead of a private topic like /topic/agent/A...
+
+...both Agent A and Customer C1 will subscribe to a conversation topic, like: /topic/conversation/conv-123.
+
+When Agent A sends a message, it goes to this topic. Customer C1 gets it instantly. When Customer C1 sends a message, it goes to this same topic. Agent A gets it instantly.
+
+2. The Updated End-to-End Workflow
+This has two phases: 1. Getting connected and 2. Chatting.
+
+Phase 1: Customer Starts a Chat (The Connection)
+This flow is still best handled by Kafka to find a free agent.
+
+Customer UI: The customer (e.g., "Customer C1") opens your chat widget. They select their issue_type (e.g., PAYMENT_STALLED) and send their first message.
+
+HTTP Request: This first message is sent via HTTP to POST /api/chat/start.
+
+Kafka: The backend publishes this to the incoming_messages Kafka topic.
+
+Kafka Consumer (Assignment Service):
+
+It finds a "Free" agent (e.g., "Agent A"), just as we discussed.
+
+It creates the Conversation (e.g., conv-123) in the database.
+
+It locks the agent: UPDATE Agents SET current_conversation_id = 'conv-123' WHERE agent_id = 'A'.
+
+The "Handshake" (The New Part):
+
+The service now sends two separate WebSocket pushes:
+
+To Agent A: It pushes to /topic/agent/A with a message: {"action": "new_chat", "conversation_id": "conv-123"}.
+
+To Customer C1: It also pushes to /topic/customer/C1 (their personal topic) with the same message.
+
+Frontend (Both UIs):
+
+Agent A's UI receives this push. It automatically subscribes to the shared room: /topic/conversation/conv-123 and opens the chat window.
+
+Customer C1's UI receives this push. It also automatically subscribes to /topic/conversation/conv-123 and opens the chat window.
+
+The connection is now live. Kafka's job is done.
+
+Phase 2: The Live Chat (The "WhatsApp" Part)
+Now that both users are subscribed to /topic/conversation/conv-123, the chat is handled entirely by the WebSocket broker.
+
+Customer C1 Sends a Message:
+
+Frontend: The Customer UI sends the message over WebSocket to the backend endpoint: /app/chat/send/conv-123.
+
+Backend: The WebSocket controller saves the message to the Messages table.
+
+Backend: It then broadcasts that message to the shared topic: /topic/conversation/conv-123.
+
+Result: Agent A's UI, which is subscribed, gets the message instantly.
+
+Agent A Sends a Reply:
+
+Frontend: The Agent UI sends the message over WebSocket to the same endpoint: /app/chat/send/conv-123.
+
+Backend: The WebSocket controller saves the message to the Messages table.
+
+Backend: It also broadcasts that message to the shared topic: /topic/conversation/conv-123.
+
+Result: Customer C1's UI gets the reply instantly.
+
+This is a true, bi-directional, real-time chat. When Agent A clicks the "Close Conversation" button, the backend sets their current_conversation_id to NULL (freeing them up) and sends a "chat_ended" message to the topic, causing both UIs to close the window.
