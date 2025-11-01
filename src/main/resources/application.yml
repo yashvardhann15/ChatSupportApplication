@@ -16,8 +16,7 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
   session:
-    jdbc:
-      initialize-schema: never
+    store-type: redis
   flyway:
     baseline-on-migrate: true
     enabled: true
@@ -25,5 +24,7 @@ spring:
     baseline-version: 0
     user: ${spring.datasource.username}
     password: ${spring.datasource.password}
+  kafka:
+    bootstrap-servers: localhost:9092
 server:
   port: 8050

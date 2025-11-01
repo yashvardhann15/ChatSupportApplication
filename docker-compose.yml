@@ -16,12 +16,13 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/anirudh?sessionTimezone=Asia/Kolkata
       - SPRING_DATASOURCE_USERNAME=anirudh
       - SPRING_DATASOURCE_PASSWORD=anirudh
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+#      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=ms_kafka:29092
       - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411/
       - SPRING_REDIS_HOST=redis
       - SPRING_REDIS_PORT=6379
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=ms_kafka:29092
-      - SPRING_SESSION_JDBC_INITIALIZE_SCHEMA=always
+      - SPRING_SESSION_JDBC_INITIALIZE_SCHEMA=never
 
   postgres:
     container_name: ms_pg_sql

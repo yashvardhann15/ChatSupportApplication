@@ -6,6 +6,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class TryController {
     @GetMapping("/hello")
     public String sayHello() {
-        return "Hello! The application is running successfully.";
+        return "Hello! The application is running... Bht dimag lagaya ";
     }
 }
