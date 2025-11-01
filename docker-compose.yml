@@ -21,7 +21,6 @@ services:
       - SPRING_ZIPKIN_BASE_URL=http://zipkin:9411/
       - SPRING_REDIS_HOST=redis
       - SPRING_REDIS_PORT=6379
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=ms_kafka:29092
       - SPRING_SESSION_JDBC_INITIALIZE_SCHEMA=never
 
   postgres:

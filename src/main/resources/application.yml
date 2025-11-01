@@ -1,6 +1,8 @@
 spring:
   application:
     name: SupportChatApplication
+  zipkin:
+    base-url: http://your-zipkin-server-address:9411
   datasource:
     url: jdbc:postgresql://localhost:5432/anirudh?sessionTimezone=Asia/Kolkata
     username: anirudh
