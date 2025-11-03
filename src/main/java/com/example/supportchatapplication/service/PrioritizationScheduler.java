@@ -20,7 +20,7 @@ public class PrioritizationScheduler {
     /**
      * Runs every 5 seconds to attempt assignment for high-priority requests.
      */
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = 10000)
     public void runPrioritizedAssignment() {
         log.debug("SCHEDULER: Running assignment check for pending requests...");
 

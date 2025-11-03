@@ -451,11 +451,81 @@
                     <div class="form-group">
                         <label for="issue-type">What do you need help with?</label>
                         <select id="issue-type">
-                            <option value="PAYMENT_DEDUCTED_NOT_RECEIVED">💳 Payment Deducted, Not Received (Urgent - P5)</option>
-                            <option value="LOAN_APPROVAL_INQUIRY">🏦 Loan Approval Inquiry (High Priority - P4)</option>
-                            <option value="PAYMENT_STALLED">⏳ Payment Stalled (Medium Priority - P3)</option>
-                            <option value="ACCOUNT_UPDATE_INQUIRY">👤 Account Update (Low Priority - P2)</option>
-                            <option value="GENERAL_INQUIRY">❓ General Inquiry (P1)</option>
+                            <!--  PAYMENT-RELATED ISSUES -->
+                            <option value="PAYMENT_DEDUCTED_NOT_RECEIVED">
+                                Amount has been debited from your account, but the transaction has not reflected on our end. (Urgent - P5)
+                            </option>
+
+                            <option value="DOUBLE_PAYMENT_ISSUE">
+                                Duplicate Payment Made — You have been charged twice for the same transaction or order. (Urgent - P5)
+                            </option>
+
+                            <option value="PAYMENT_FAILED">
+                                Payment Failed but Amount Debited — Transaction failed midway, yet funds were deducted from your account. (High Priority - P4)
+                            </option>
+
+                            <option value="PAYMENT_PENDING_CONFIRMATION">
+                                 Payment Pending Confirmation — Payment is under processing or awaiting confirmation from your bank. (Medium Priority - P3)
+                            </option>
+
+                            <option value="REFUND_DELAYED">
+                                Refund Delayed — Refund has not been credited to your account within the expected timeline. (Medium Priority - P3)
+                            </option>
+
+                            <option value="PAYMENT_HISTORY_REQUEST">
+                                 Payment History Request — You wish to receive a detailed history or summary of your past transactions. (Low Priority - P2)
+                            </option>
+
+                            <option value="BILLING_QUERY">
+                                 Billing Discrepancy or Clarification — You have a question or concern regarding billing details, charges, or invoices. (Low Priority - P2)
+                            </option>
+
+
+                            <!--  LOAN-RELATED INQUIRIES -->
+                            <option value="LOAN_APPROVAL_INQUIRY">
+                                 Loan Approval Inquiry — Checking the status or eligibility of your submitted loan application. (High Priority - P4)
+                            </option>
+
+                            <option value="LOAN_DISBURSEMENT_DELAY">
+                                 Loan Disbursement Delay — Loan amount has been approved but not yet credited to your account. (Urgent - P5)
+                            </option>
+
+                            <option value="LOAN_REPAYMENT_QUERY">
+                                Loan Repayment or EMI Query — Questions about EMI schedules, payment dates, or repayment options. (Medium Priority - P3)
+                            </option>
+
+                            <option value="LOAN_FORECLOSURE_REQUEST">
+                                 Loan Foreclosure / Prepayment Request — Intention to close the loan account before the full tenure by paying outstanding dues. (Low Priority - P2)
+                            </option>
+
+
+                            <!--  FINANCIAL / ACCOUNT ISSUES -->
+                            <option value="ACCOUNT_UPDATE_INQUIRY">
+                                 Account Update Request — Need to update personal or account-related details such as address, contact number, or KYC information. (Low Priority - P2)
+                            </option>
+
+                            <option value="ACCOUNT_VERIFICATION_ISSUE">
+                                Account Verification Issue — Facing trouble with KYC verification or account activation steps. (High Priority - P4)
+                            </option>
+
+                            <option value="STATEMENT_REQUEST">
+                                 Account Statement or Summary Request — Requesting a detailed monthly or yearly account statement. (Medium Priority - P3)
+                            </option>
+
+                            <option value="LIMIT_INCREASE_REQUEST">
+                                 Credit / Transaction Limit Increase — Seeking an increase in your card or transaction limit. (Low Priority - P2)
+                            </option>
+
+
+                            <!--  GENERAL INQUIRIES -->
+                            <option value="GENERAL_INQUIRY">
+                                 General Information or Assistance — Any general or non-urgent query related to our services or platform. (P1)
+                            </option>
+
+                            <option value="FEEDBACK_OR_SUGGESTION">
+                                 Feedback or Suggestion — Share feedback, improvement ideas, or appreciation about our services. (P1)
+                            </option>
+
                         </select>
                     </div>
                     <div class="form-group">
