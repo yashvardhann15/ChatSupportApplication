@@ -73,3 +73,62 @@ Backend: It also broadcasts that message to the shared topic: /topic/conversatio
 Result: Customer C1's UI gets the reply instantly.
 
 This is a true, bi-directional, real-time chat. When Agent A clicks the "Close Conversation" button, the backend sets their current_conversation_id to NULL (freeing them up) and sends a "chat_ended" message to the topic, causing both UIs to close the window.
+
+
+
+
+
+
+
+
+
+Search Functionality: Build an API endpoint (e.g., GET /api/search) that allows agents to search for customers by name or for text within chat messages.
+
+Canned Messages: Create the database model (CannedMessage) and an API endpoint (e.g., GET /api/canned-messages) so the agent's UI can fetch a list of pre-written replies.
+
+Customer Context API: Build the simple API (e.g., GET /api/customer/{id}/context) to show extra information about a customer in the agent's UI.
+
+sam: 0cc62192-3b71-4433-85ad-3ba88906fb34
+ram: 12825c86-d046-43cd-96d4-b857c77009b3
+Customer mohan: 9c0a632b-673b-4a9a-9cc6-95e973cbbec1
+
+
+
+
+CONNECT
+login:0cc62192-3b71-4433-85ad-3ba88906fb34
+accept-version:1.2
+heart-beat:0,0
+
+
+SUBSCRIBE
+id:sub-0
+destination:/topic/agent/0cc62192-3b71-4433-85ad-3ba88906fb34
+
+
+SUBSCRIBE
+id:sub-1
+destination:/topic/conversation/b444e9b3-0ea6-414d-8b63-7d9f0804a945
+
+
+SEND
+destination:/app/chat/send/b52dd085-f1cd-423e-a109-e1a61d735a66
+content-type:application/json
+
+{"body":"Hi Mohan, this is Agent Sam. I see your payment is stuck."}
+\u0000
+
+
+
+
+CONNECT
+accept-version:1.2
+heart-beat:0,0
+login:9c0a632b-673b-4a9a-9cc6-95e973cbbec1
+
+
+SUBSCRIBE
+id:sub-0
+destination:/topic/conversation/b444e9b3-0ea6-414d-8b63-7d9f0804a945
+
+

@@ -1,0 +1,1538 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>AGENT Portal</title>-->
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>-->
+<!--    <style>-->
+<!--        * { margin: 0; padding: 0; box-sizing: border-box; }-->
+
+<!--        body {-->
+<!--            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;-->
+<!--            display: flex;-->
+<!--            height: 100vh;-->
+<!--            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);-->
+<!--            color: #2d3748;-->
+<!--        }-->
+
+<!--        /* Sidebar */-->
+<!--        .sidebar {-->
+<!--            width: 320px;-->
+<!--            background: #1a202c;-->
+<!--            display: flex;-->
+<!--            flex-direction: column;-->
+<!--            box-shadow: 2px 0 10px rgba(0,0,0,0.1);-->
+<!--        }-->
+
+<!--        .sidebar-header {-->
+<!--            padding: 24px;-->
+<!--            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);-->
+<!--            color: white;-->
+<!--        }-->
+
+<!--        .sidebar-header h1 {-->
+<!--            font-size: 24px;-->
+<!--            font-weight: 700;-->
+<!--            margin-bottom: 4px;-->
+<!--        }-->
+
+<!--        .sidebar-header p {-->
+<!--            font-size: 13px;-->
+<!--            opacity: 0.9;-->
+<!--        }-->
+
+<!--        .sidebar-content {-->
+<!--            flex: 1;-->
+<!--            overflow-y: auto;-->
+<!--            padding: 20px;-->
+<!--        }-->
+
+<!--        .card {-->
+<!--            background: #2d3748;-->
+<!--            border-radius: 12px;-->
+<!--            padding: 20px;-->
+<!--            margin-bottom: 16px;-->
+<!--            border: 1px solid #4a5568;-->
+<!--        }-->
+
+<!--        .card h3 {-->
+<!--            color: #e2e8f0;-->
+<!--            font-size: 14px;-->
+<!--            font-weight: 600;-->
+<!--            margin-bottom: 16px;-->
+<!--            text-transform: uppercase;-->
+<!--            letter-spacing: 0.5px;-->
+<!--        }-->
+
+<!--        .status-badge {-->
+<!--            display: inline-block;-->
+<!--            padding: 6px 12px;-->
+<!--            border-radius: 20px;-->
+<!--            font-size: 12px;-->
+<!--            font-weight: 600;-->
+<!--            margin-bottom: 12px;-->
+<!--        }-->
+
+<!--        .status-badge.online {-->
+<!--            background: #48bb78;-->
+<!--            color: white;-->
+<!--        }-->
+
+<!--        .status-badge.offline {-->
+<!--            background: #718096;-->
+<!--            color: white;-->
+<!--        }-->
+
+<!--        input[type="text"], input[type="email"], textarea {-->
+<!--            width: 100%;-->
+<!--            padding: 12px;-->
+<!--            border: 1px solid #4a5568;-->
+<!--            border-radius: 8px;-->
+<!--            background: #1a202c;-->
+<!--            color: #e2e8f0;-->
+<!--            font-size: 14px;-->
+<!--            margin-bottom: 12px;-->
+<!--            transition: all 0.2s;-->
+<!--        }-->
+
+<!--        input:focus, textarea:focus {-->
+<!--            outline: none;-->
+<!--            border-color: #667eea;-->
+<!--            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);-->
+<!--        }-->
+
+<!--        textarea {-->
+<!--            resize: vertical;-->
+<!--            min-height: 80px;-->
+<!--            font-family: inherit;-->
+<!--        }-->
+
+<!--        button {-->
+<!--            width: 100%;-->
+<!--            padding: 12px;-->
+<!--            border: none;-->
+<!--            border-radius: 8px;-->
+<!--            font-size: 14px;-->
+<!--            font-weight: 600;-->
+<!--            cursor: pointer;-->
+<!--            transition: all 0.2s;-->
+<!--        }-->
+
+<!--        .btn-primary {-->
+<!--            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);-->
+<!--            color: white;-->
+<!--        }-->
+
+<!--        .btn-primary:hover {-->
+<!--            transform: translateY(-1px);-->
+<!--            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);-->
+<!--        }-->
+
+<!--        .btn-danger {-->
+<!--            background: #f56565;-->
+<!--            color: white;-->
+<!--            margin-top: 8px;-->
+<!--        }-->
+
+<!--        .btn-danger:hover {-->
+<!--            background: #e53e3e;-->
+<!--        }-->
+
+<!--        .agent-info {-->
+<!--            background: #1a202c;-->
+<!--            padding: 12px;-->
+<!--            border-radius: 8px;-->
+<!--            margin-bottom: 12px;-->
+<!--            font-size: 13px;-->
+<!--            color: #a0aec0;-->
+<!--            word-break: break-all;-->
+<!--        }-->
+
+<!--        /* Main Chat Area */-->
+<!--        .main-area {-->
+<!--            flex: 1;-->
+<!--            display: flex;-->
+<!--            flex-direction: column;-->
+<!--            background: #f7fafc;-->
+<!--        }-->
+
+<!--        .chat-header {-->
+<!--            background: white;-->
+<!--            padding: 20px 24px;-->
+<!--            border-bottom: 1px solid #e2e8f0;-->
+<!--            box-shadow: 0 1px 3px rgba(0,0,0,0.05);-->
+<!--        }-->
+
+<!--        .chat-header h2 {-->
+<!--            font-size: 20px;-->
+<!--            margin-bottom: 4px;-->
+<!--            color: #2d3748;-->
+<!--        }-->
+
+<!--        .chat-header .meta {-->
+<!--            font-size: 13px;-->
+<!--            color: #718096;-->
+<!--        }-->
+
+<!--        .waiting-state {-->
+<!--            flex: 1;-->
+<!--            display: flex;-->
+<!--            align-items: center;-->
+<!--            justify-content: center;-->
+<!--            flex-direction: column;-->
+<!--            color: #718096;-->
+<!--        }-->
+
+<!--        .waiting-state svg {-->
+<!--            width: 80px;-->
+<!--            height: 80px;-->
+<!--            margin-bottom: 16px;-->
+<!--            opacity: 0.5;-->
+<!--        }-->
+
+<!--        .waiting-state p {-->
+<!--            font-size: 18px;-->
+<!--        }-->
+
+<!--        .chat-container {-->
+<!--            flex: 1;-->
+<!--            display: flex;-->
+<!--            flex-direction: column;-->
+<!--            display: none;-->
+<!--        }-->
+
+<!--        .chat-container.active {-->
+<!--            display: flex;-->
+<!--        }-->
+
+<!--        #message-list {-->
+<!--            flex: 1;-->
+<!--            overflow-y: auto;-->
+<!--            padding: 24px;-->
+<!--            background: #edf2f7;-->
+<!--        }-->
+
+<!--        .message-row {-->
+<!--            display: flex;-->
+<!--            margin-bottom: 16px;-->
+<!--            animation: fadeIn 0.3s ease-in;-->
+<!--        }-->
+
+<!--        @keyframes fadeIn {-->
+<!--            from { opacity: 0; transform: translateY(10px); }-->
+<!--            to { opacity: 1; transform: translateY(0); }-->
+<!--        }-->
+
+<!--        .msg-agent {-->
+<!--            justify-content: flex-end;-->
+<!--        }-->
+
+<!--        .msg-bubble {-->
+<!--            max-width: 65%;-->
+<!--            padding: 12px 16px;-->
+<!--            border-radius: 16px;-->
+<!--            line-height: 1.5;-->
+<!--            font-size: 14px;-->
+<!--            word-wrap: break-word;-->
+<!--        }-->
+
+<!--        .msg-bubble.AGENT {-->
+<!--            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);-->
+<!--            color: white;-->
+<!--            border-bottom-right-radius: 4px;-->
+<!--        }-->
+
+<!--        .msg-bubble.CUSTOMER {-->
+<!--            background: white;-->
+<!--            color: #2d3748;-->
+<!--            border: 1px solid #e2e8f0;-->
+<!--            border-bottom-left-radius: 4px;-->
+<!--            box-shadow: 0 1px 2px rgba(0,0,0,0.05);-->
+<!--        }-->
+
+<!--        .msg-bubble.SYSTEM {-->
+<!--            background: #fef5e7;-->
+<!--            color: #f59e0b;-->
+<!--            text-align: center;-->
+<!--            font-size: 13px;-->
+<!--            font-style: italic;-->
+<!--            border: 1px solid #fbbf24;-->
+<!--            max-width: 80%;-->
+<!--            margin: 0 auto;-->
+<!--        }-->
+
+<!--        .canned-container {-->
+<!--            padding: 12px 24px;-->
+<!--            background: white;-->
+<!--            border-top: 1px solid #e2e8f0;-->
+<!--        }-->
+
+<!--        .canned-label {-->
+<!--            font-size: 12px;-->
+<!--            color: #718096;-->
+<!--            margin-bottom: 8px;-->
+<!--            font-weight: 600;-->
+<!--        }-->
+
+<!--        .canned-buttons {-->
+<!--            display: flex;-->
+<!--            gap: 8px;-->
+<!--            flex-wrap: wrap;-->
+<!--        }-->
+
+<!--        .canned-btn {-->
+<!--            padding: 6px 12px;-->
+<!--            background: #edf2f7;-->
+<!--            color: #4a5568;-->
+<!--            border: 1px solid #cbd5e0;-->
+<!--            border-radius: 6px;-->
+<!--            font-size: 12px;-->
+<!--            cursor: pointer;-->
+<!--            transition: all 0.2s;-->
+<!--            width: auto;-->
+<!--        }-->
+
+<!--        .canned-btn:hover {-->
+<!--            background: #667eea;-->
+<!--            color: white;-->
+<!--            border-color: #667eea;-->
+<!--        }-->
+
+<!--        .message-input-area {-->
+<!--            padding: 16px 24px;-->
+<!--            background: white;-->
+<!--            border-top: 1px solid #e2e8f0;-->
+<!--        }-->
+
+<!--        .input-row {-->
+<!--            display: flex;-->
+<!--            gap: 8px;-->
+<!--            margin-bottom: 8px;-->
+<!--        }-->
+
+<!--        .input-row input {-->
+<!--            flex: 1;-->
+<!--            margin: 0;-->
+<!--            padding: 14px 16px;-->
+<!--            border: 2px solid #e2e8f0;-->
+<!--            border-radius: 24px;-->
+<!--            font-size: 14px;-->
+<!--        }-->
+
+<!--        .input-row input:focus {-->
+<!--            border-color: #667eea;-->
+<!--        }-->
+
+<!--        .input-row button {-->
+<!--            width: auto;-->
+<!--            padding: 0 24px;-->
+<!--            border-radius: 24px;-->
+<!--        }-->
+
+<!--        .btn-send {-->
+<!--            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);-->
+<!--            color: white;-->
+<!--        }-->
+
+<!--        .btn-close {-->
+<!--            background: #f56565;-->
+<!--            color: white;-->
+<!--            padding: 10px 20px;-->
+<!--            border-radius: 8px;-->
+<!--        }-->
+
+<!--        /* Context Panel */-->
+<!--        .context-panel {-->
+<!--            width: 360px;-->
+<!--            background: white;-->
+<!--            border-left: 1px solid #e2e8f0;-->
+<!--            overflow-y: auto;-->
+<!--            display: none;-->
+<!--        }-->
+
+<!--        .context-panel.active {-->
+<!--            display: block;-->
+<!--        }-->
+
+<!--        .context-header {-->
+<!--            padding: 20px 24px;-->
+<!--            background: #f7fafc;-->
+<!--            border-bottom: 1px solid #e2e8f0;-->
+<!--        }-->
+
+<!--        .context-header h2 {-->
+<!--            font-size: 18px;-->
+<!--            color: #2d3748;-->
+<!--        }-->
+
+<!--        .context-section {-->
+<!--            padding: 20px 24px;-->
+<!--            border-bottom: 1px solid #edf2f7;-->
+<!--        }-->
+
+<!--        .context-section h3 {-->
+<!--            font-size: 14px;-->
+<!--            color: #4a5568;-->
+<!--            margin-bottom: 12px;-->
+<!--            font-weight: 600;-->
+<!--            text-transform: uppercase;-->
+<!--            letter-spacing: 0.5px;-->
+<!--        }-->
+
+<!--        .profile-json {-->
+<!--            background: #f7fafc;-->
+<!--            padding: 12px;-->
+<!--            border-radius: 8px;-->
+<!--            font-family: 'Courier New', monospace;-->
+<!--            font-size: 12px;-->
+<!--            color: #2d3748;-->
+<!--            overflow-x: auto;-->
+<!--            white-space: pre-wrap;-->
+<!--        }-->
+
+<!--        .past-chat-item {-->
+<!--            padding: 12px;-->
+<!--            background: #f7fafc;-->
+<!--            border-radius: 8px;-->
+<!--            margin-bottom: 8px;-->
+<!--            font-size: 13px;-->
+<!--            color: #4a5568;-->
+<!--            border-left: 3px solid #667eea;-->
+<!--        }-->
+
+<!--        .past-chat-item:hover {-->
+<!--            background: #edf2f7;-->
+<!--        }-->
+
+<!--        /* Logs Panel */-->
+<!--        .logs-panel {-->
+<!--            width: 280px;-->
+<!--            background: #1a1a1a;-->
+<!--            display: flex;-->
+<!--            flex-direction: column;-->
+<!--        }-->
+
+<!--        .logs-header {-->
+<!--            padding: 16px 20px;-->
+<!--            background: #0f0f0f;-->
+<!--            border-bottom: 1px solid #333;-->
+<!--        }-->
+
+<!--        .logs-header h2 {-->
+<!--            font-size: 14px;-->
+<!--            color: #4ade80;-->
+<!--            font-weight: 600;-->
+<!--            text-transform: uppercase;-->
+<!--            letter-spacing: 1px;-->
+<!--        }-->
+
+<!--        #logs {-->
+<!--            flex: 1;-->
+<!--            background: #1a1a1a;-->
+<!--            color: #4ade80;-->
+<!--            border: none;-->
+<!--            padding: 16px;-->
+<!--            font-family: 'Courier New', monospace;-->
+<!--            font-size: 11px;-->
+<!--            line-height: 1.6;-->
+<!--            resize: none;-->
+<!--        }-->
+
+<!--        /* Scrollbar Styling */-->
+<!--        ::-webkit-scrollbar {-->
+<!--            width: 8px;-->
+<!--            height: 8px;-->
+<!--        }-->
+
+<!--        ::-webkit-scrollbar-track {-->
+<!--            background: #2d3748;-->
+<!--        }-->
+
+<!--        ::-webkit-scrollbar-thumb {-->
+<!--            background: #4a5568;-->
+<!--            border-radius: 4px;-->
+<!--        }-->
+
+<!--        ::-webkit-scrollbar-thumb:hover {-->
+<!--            background: #667eea;-->
+<!--        }-->
+
+<!--        .search-results {-->
+<!--            max-height: 200px;-->
+<!--            overflow-y: auto;-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+
+<!--&lt;!&ndash; Sidebar &ndash;&gt;-->
+<!--<div class="sidebar">-->
+<!--    <div class="sidebar-header">-->
+<!--        <h1>🎧 Agent Portal</h1>-->
+<!--        <p>Real-time Customer Support</p>-->
+<!--    </div>-->
+
+<!--    <div class="sidebar-content">-->
+<!--        &lt;!&ndash; Agent Status Card &ndash;&gt;-->
+<!--        <div class="card">-->
+<!--            <h3>Agent Status</h3>-->
+<!--            <div id="register-panel">-->
+<!--                <input type="email" id="agent-email" value="agent-sam@test.com" placeholder="Enter your email">-->
+<!--                <button class="btn-primary" id="register-btn">Login</button>-->
+<!--            </div>-->
+<!--            <div id="status-display" style="display: none;">-->
+<!--                <span class="status-badge online" id="agent-status-badge">● ONLINE</span>-->
+<!--                <div class="agent-info" id="agent-id"></div>-->
+<!--                <button class="btn-danger" id="logout-btn">Logout</button>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; Search Card &ndash;&gt;-->
+<!--        <div class="card">-->
+<!--            <h3>Search History</h3>-->
+<!--            <input type="text" id="search-input" placeholder="Search conversations...">-->
+<!--            <button class="btn-primary" id="search-btn">Search</button>-->
+<!--            <textarea id="search-results" class="search-results" placeholder="Results will appear here..." readonly></textarea>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; Main Chat Area &ndash;&gt;-->
+<!--<div class="main-area">-->
+<!--    <div class="waiting-state" id="waiting-state">-->
+<!--        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">-->
+<!--            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>-->
+<!--        </svg>-->
+<!--        <p>Waiting for customer assignment...</p>-->
+<!--    </div>-->
+
+<!--    <div class="chat-container" id="chat-container">-->
+<!--        <div class="chat-header">-->
+<!--            <h2 id="customer-name-header">Customer Chat</h2>-->
+<!--            <div class="meta">-->
+<!--                Conversation ID: <strong id="convo-id">—</strong>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div id="message-list"></div>-->
+
+<!--        <div class="canned-container" id="canned-container">-->
+<!--            <div class="canned-label">Quick Replies</div>-->
+<!--            <div class="canned-buttons" id="canned-buttons"></div>-->
+<!--        </div>-->
+
+<!--        <div class="message-input-area">-->
+<!--            <div class="input-row">-->
+<!--                <input type="text" id="message-input" placeholder="Type your message...">-->
+<!--                <button class="btn-send" id="send-btn">Send</button>-->
+<!--            </div>-->
+<!--            <button class="btn-close" id="close-btn">Close Conversation</button>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; Context Panel &ndash;&gt;-->
+<!--<div class="context-panel" id="context-panel">-->
+<!--    <div class="context-header">-->
+<!--        <h2>Customer Context</h2>-->
+<!--    </div>-->
+
+<!--    <div class="context-section">-->
+<!--        <h3>Profile Information</h3>-->
+<!--        <div class="profile-json" id="customer-profile-json">No data available</div>-->
+<!--    </div>-->
+
+<!--    <div class="context-section">-->
+<!--        <h3>Past Conversations</h3>-->
+<!--        <div id="past-convo-list"></div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; Logs Panel &ndash;&gt;-->
+<!--<div class="logs-panel">-->
+<!--    <div class="logs-header">-->
+<!--        <h2>⚡ System Logs</h2>-->
+<!--    </div>-->
+<!--    <textarea id="logs" readonly></textarea>-->
+<!--</div>-->
+
+<!--<script>-->
+<!--    let stompClient = null;-->
+<!--    let currentAgentId = null;-->
+<!--    let currentConvoId = null;-->
+<!--    let currentCustomerName = null;-->
+<!--    const logs = document.getElementById('logs');-->
+
+<!--    function log(message, type = 'info') {-->
+<!--        const timestamp = new Date().toLocaleTimeString();-->
+<!--        logs.value += `[${timestamp}] [${type.toUpperCase()}] ${message}\n`;-->
+<!--        logs.scrollTop = logs.scrollHeight;-->
+<!--    }-->
+
+<!--    function displayMessage(sender, body, isSystem = false) {-->
+<!--        const list = document.getElementById('message-list');-->
+<!--        const senderType = sender.toUpperCase();-->
+<!--        const container = document.createElement('div');-->
+<!--        container.className = 'message-row';-->
+<!--        const bubble = document.createElement('div');-->
+<!--        bubble.className = `msg-bubble ${senderType}`;-->
+<!--        bubble.innerText = body;-->
+
+<!--        if (isSystem) {-->
+<!--            bubble.innerText = `— ${body} —`;-->
+<!--        } else if (senderType === 'AGENT') {-->
+<!--            container.classList.add('msg-agent');-->
+<!--        }-->
+
+<!--        container.appendChild(bubble);-->
+<!--        list.appendChild(container);-->
+<!--        list.scrollTop = list.scrollHeight;-->
+<!--    }-->
+
+<!--    document.getElementById('register-btn').onclick = async function() {-->
+<!--        const email = document.getElementById('agent-email').value;-->
+<!--        const response = await fetch('http://localhost:8080/api/agent/register', {-->
+<!--            method: 'POST',-->
+<!--            headers: {'Content-Type': 'application/json'},-->
+<!--            body: JSON.stringify({ email: email, role: "AGENT" })-->
+<!--        });-->
+<!--        if (!response.ok) { log(`Registration failed: ${response.status}`, 'error'); return; }-->
+
+<!--        const agent = await response.json();-->
+<!--        currentAgentId = agent.id;-->
+<!--        document.getElementById('agent-id').innerText = `Agent ID: ${currentAgentId}`;-->
+<!--        log(`Registered successfully. Agent ID: ${currentAgentId}`, 'success');-->
+
+<!--        document.getElementById('register-panel').style.display = 'none';-->
+<!--        document.getElementById('status-display').style.display = 'block';-->
+
+<!--        connectWebSocket();-->
+<!--        fetchCannedMessages();-->
+<!--    }-->
+
+<!--    document.getElementById('logout-btn').onclick = async function() {-->
+<!--        if (stompClient && stompClient.connected) stompClient.disconnect();-->
+
+<!--        const response = await fetch(`http://localhost:8080/api/agent/logout/${currentAgentId}`, { method: 'POST' });-->
+<!--        if (response.ok) {-->
+<!--            log("Logged out successfully.", 'success');-->
+<!--            document.getElementById('agent-status-badge').className = 'status-badge offline';-->
+<!--            document.getElementById('agent-status-badge').innerText = '● OFFLINE';-->
+<!--            document.getElementById('register-panel').style.display = 'block';-->
+<!--            document.getElementById('status-display').style.display = 'none';-->
+<!--        } else {-->
+<!--            log("Logout failed in DB.", 'error');-->
+<!--        }-->
+<!--    }-->
+
+<!--    function connectWebSocket() {-->
+<!--        stompClient = Stomp.client("ws://localhost:8080/ws-connect");-->
+<!--        stompClient.connect(-->
+<!--            { "login": currentAgentId },-->
+<!--            (frame) => {-->
+<!--                log("WebSocket Connected!", 'success');-->
+<!--                const privateTopic = `/topic/agent/${currentAgentId}`;-->
+<!--                stompClient.subscribe(privateTopic, onAssignmentReceived);-->
+<!--            },-->
+<!--            (error) => { log(`WebSocket Connection Error: ${error}`, 'error'); }-->
+<!--        );-->
+<!--    }-->
+
+<!--    function onAssignmentReceived(message) {-->
+<!--        log("-&#45;&#45; NEW ASSIGNMENT RECEIVED -&#45;&#45;", 'msg');-->
+<!--        const notification = JSON.parse(message.body);-->
+<!--        currentConvoId = notification.conversationId;-->
+<!--        currentCustomerName = notification.participantName;-->
+
+<!--        log(`Assigned to new chat: ${currentConvoId}`);-->
+
+<!--        document.getElementById('waiting-state').style.display = 'none';-->
+<!--        document.getElementById('chat-container').classList.add('active');-->
+<!--        document.getElementById('customer-name-header').innerText = `Chat with ${currentCustomerName}`;-->
+<!--        document.getElementById('convo-id').innerText = currentConvoId;-->
+<!--        document.getElementById('message-list').innerHTML = '';-->
+
+<!--        fetchCustomerContext(currentConvoId);-->
+<!--        subscribeToChatRoom(currentConvoId);-->
+<!--    }-->
+
+<!--    async function fetchCustomerContext(convoId) {-->
+<!--        const response = await fetch(`http://localhost:8080/api/chat/${convoId}/context`);-->
+<!--        if (!response.ok) { log("Failed to fetch customer context.", 'error'); return; }-->
+
+<!--        const context = await response.json();-->
+<!--        document.getElementById('context-panel').classList.add('active');-->
+
+<!--        document.getElementById('customer-profile-json').innerText =-->
+<!--            context.customerContextJson ? JSON.stringify(JSON.parse(context.customerContextJson), null, 2) : "No external profile data.";-->
+
+<!--        const list = document.getElementById('past-convo-list');-->
+<!--        list.innerHTML = '';-->
+<!--        context.pastConversations.forEach(chat => {-->
+<!--            const item = document.createElement('div');-->
+<!--            item.className = 'past-chat-item';-->
+<!--            item.innerHTML = `-->
+<!--                <div><strong>P${chat.urgencyScore}</strong> • ${chat.status}</div>-->
+<!--                <div style="font-size: 11px; color: #718096; margin-top: 4px;">-->
+<!--                    ${new Date(chat.createdAt).toLocaleString()}-->
+<!--                </div>-->
+<!--            `;-->
+<!--            list.appendChild(item);-->
+<!--        });-->
+<!--    }-->
+
+<!--    async function fetchCannedMessages() {-->
+<!--        const response = await fetch('http://localhost:8080/api/canned-messages');-->
+<!--        if (!response.ok) { log("Failed to fetch canned messages.", 'error'); return; }-->
+
+<!--        const messages = await response.json();-->
+<!--        const container = document.getElementById('canned-buttons');-->
+<!--        container.innerHTML = '';-->
+
+<!--        messages.forEach(msg => {-->
+<!--            const button = document.createElement('button');-->
+<!--            button.className = 'canned-btn';-->
+<!--            button.innerText = msg.shortcut;-->
+<!--            button.onclick = () => {-->
+<!--                document.getElementById('message-input').value = msg.text;-->
+<!--            };-->
+<!--            container.appendChild(button);-->
+<!--        });-->
+<!--    }-->
+
+<!--    function subscribeToChatRoom(convoId) {-->
+<!--        const topic = `/topic/conversation/${convoId}`;-->
+<!--        stompClient.subscribe(topic, onChatMessageReceived);-->
+<!--    }-->
+
+<!--    function onChatMessageReceived(message) {-->
+<!--        const parsedBody = JSON.parse(message.body);-->
+
+<!--        if (parsedBody.body) {-->
+<!--            displayMessage(parsedBody.senderType, parsedBody.body);-->
+<!--        } else if (parsedBody.message) {-->
+<!--            displayMessage('SYSTEM', parsedBody.message, true);-->
+<!--            document.getElementById('chat-container').classList.remove('active');-->
+<!--            document.getElementById('waiting-state').style.display = 'flex';-->
+<!--            document.getElementById('context-panel').classList.remove('active');-->
+<!--        }-->
+<!--    }-->
+
+<!--    document.getElementById('send-btn').onclick = function() {-->
+<!--        const message = document.getElementById('message-input').value;-->
+<!--        if (!message) return;-->
+<!--        const destination = `/app/chat/send/${currentConvoId}`;-->
+
+<!--        stompClient.send(destination, {}, JSON.stringify({ body: message }));-->
+<!--        document.getElementById('message-input').value = '';-->
+<!--    }-->
+
+<!--    document.getElementById('message-input').addEventListener('keypress', function(e) {-->
+<!--        if (e.key === 'Enter') {-->
+<!--            document.getElementById('send-btn').click();-->
+<!--        }-->
+<!--    });-->
+
+<!--    document.getElementById('close-btn').onclick = function() {-->
+<!--        const destination = `/app/chat/close/${currentConvoId}`;-->
+<!--        stompClient.send(destination);-->
+<!--        log(`Sending CLOSE command to: ${destination}`);-->
+<!--    }-->
+
+<!--    document.getElementById('search-btn').onclick = async function() {-->
+<!--        const query = document.getElementById('search-input').value;-->
+<!--        if (query.length < 3) {-->
+<!--            document.getElementById('search-results').value = "Enter at least 3 characters.";-->
+<!--            return;-->
+<!--        }-->
+
+<!--        const response = await fetch(`http://localhost:8080/api/search?q=${query}`);-->
+<!--        if (!response.ok) {-->
+<!--            document.getElementById('search-results').value = "Search failed.";-->
+<!--            return;-->
+<!--        }-->
+
+<!--        const results = await response.json();-->
+<!--        let output = `Found ${results.results.length} results:\n\n`;-->
+<!--        results.results.forEach(item => {-->
+<!--            output += `[${item.type}] ${item.text.substring(0, 50)}...\n`;-->
+<!--            output += `Date: ${new Date(item.createdAt).toLocaleString()}\n\n`;-->
+<!--        });-->
+<!--        document.getElementById('search-results').value = output;-->
+<!--    }-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AGENT Portal - Final UI</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+    <style>
+        /* CORE LAYOUT */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            display: flex;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #2d3748;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background: #1a202c;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .sidebar-header h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .sidebar-header p {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: #2d3748;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid #4a5568;
+        }
+
+        .card h3 {
+            color: #e2e8f0;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .status-badge.online {
+            background: #48bb78;
+            color: white;
+        }
+
+        .status-badge.offline {
+            background: #718096;
+            color: white;
+        }
+
+        input[type="text"], input[type="email"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #4a5568;
+            border-radius: 8px;
+            background: #1a202c;
+            color: #e2e8f0;
+            font-size: 14px;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: #f56565;
+            color: white;
+            margin-top: 8px;
+        }
+
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+
+        .agent-info {
+            background: #1a202c;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #a0aec0;
+            word-break: break-all;
+        }
+
+        /* Main Chat Area */
+        .main-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f7fafc;
+        }
+
+        .chat-header {
+            background: white;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .chat-header h2 {
+            font-size: 20px;
+            margin-bottom: 4px;
+            color: #2d3748;
+        }
+
+        .chat-header .meta {
+            font-size: 13px;
+            color: #718096;
+        }
+
+        #customer-name-header { /* Style the clickable name */
+            cursor: pointer;
+            color: #667eea;
+            text-decoration: underline;
+        }
+
+        .waiting-state {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            color: #718096;
+        }
+
+        .waiting-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .waiting-state p {
+            font-size: 18px;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            display: none;
+        }
+
+        .chat-container.active {
+            display: flex;
+        }
+
+        #message-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            background: #edf2f7;
+        }
+
+        .message-row {
+            display: flex;
+            margin-bottom: 16px;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .msg-agent {
+            justify-content: flex-end;
+        }
+
+        .msg-bubble {
+            max-width: 65%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            line-height: 1.5;
+            font-size: 14px;
+            word-wrap: break-word;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .msg-bubble.AGENT {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .msg-bubble.CUSTOMER {
+            background: white;
+            color: #2d3748;
+            border: 1px solid #e2e8f0;
+            border-bottom-left-radius: 4px;
+        }
+
+        .msg-bubble.SYSTEM {
+            background: #fef5e7;
+            color: #f59e0b;
+            text-align: center;
+            font-size: 13px;
+            font-style: italic;
+            border: 1px solid #fbbf24;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+
+        .canned-container {
+            padding: 12px 24px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .canned-label {
+            font-size: 12px;
+            color: #718096;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .canned-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .canned-btn {
+            padding: 6px 12px;
+            background: #edf2f7;
+            color: #4a5568;
+            border: 1px solid #cbd5e0;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            width: auto;
+        }
+
+        .canned-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .message-input-area {
+            padding: 16px 24px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .input-row input {
+            flex: 1;
+            margin: 0;
+            padding: 14px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 24px;
+            font-size: 14px;
+        }
+
+        .input-row input:focus {
+            border-color: #667eea;
+        }
+
+        .input-row button {
+            width: auto;
+            padding: 0 24px;
+            border-radius: 24px;
+        }
+
+        .btn-send {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-close {
+            background: #f56565;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+
+        /* Context Modal/Popup Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 800px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            color: #2d3748;
+        }
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-section {
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+        }
+
+        .modal-section:last-child {
+            border-bottom: none;
+        }
+
+        .modal-profile-json {
+            background: #edf2f7;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            font-size: 12px;
+        }
+
+        .past-chat-item {
+            padding: 8px;
+            background: #f7fafc;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            font-size: 13px;
+            border-left: 3px solid #667eea;
+        }
+
+        .search-results {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div id="customerContextModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>Customer History: <span id="modal-customer-name"></span></h2>
+        <div class="modal-section">
+            <h3>Profile Information (Req #6)</h3>
+            <pre id="modal-profile-json" class="modal-profile-json">Loading profile data...</pre>
+        </div>
+        <div class="modal-section">
+            <h3>Past Conversations (Last 10) (Req #7)</h3>
+            <ul id="modal-past-convo-list" style="list-style: none; padding: 0;"></ul>
+        </div>
+    </div>
+</div>
+<div class="sidebar">
+    <div class="sidebar-header">
+        <h1>🎧 Agent Portal</h1>
+        <p>Real-time Customer Support</p>
+    </div>
+
+    <div class="sidebar-content">
+        <div class="card">
+            <h3>Agent Status</h3>
+            <div id="register-panel">
+                <input type="email" id="agent-email" value="agent-sam@test.com" placeholder="Enter your email">
+                <button class="btn-primary" id="register-btn">Login</button>
+            </div>
+            <div id="status-display" style="display: none;">
+                <span class="status-badge online" id="agent-status-badge">● ONLINE</span>
+                <div class="agent-info" id="agent-id"></div>
+                <button class="btn-danger" id="logout-btn">Logout</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Search History</h3>
+            <input type="text" id="search-input" placeholder="Search conversations...">
+            <button class="btn-primary" id="search-btn">Search</button>
+            <textarea id="search-results" class="search-results" placeholder="Results will appear here..." readonly></textarea>
+        </div>
+    </div>
+</div>
+
+<div class="main-area">
+    <div class="waiting-state" id="waiting-state">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+        </svg>
+        <p>Waiting for customer assignment...</p>
+    </div>
+
+    <div class="chat-container" id="chat-container">
+        <div class="chat-header">
+            <h2 id="customer-name-header-clickable">Chat with <span id="customer-name-header" style="text-decoration: underline;">Customer</span></h2>
+            <div class="meta">
+                Conversation ID: <strong id="convo-id">—</strong>
+            </div>
+        </div>
+
+        <div id="message-list"></div>
+
+        <div class="canned-container" id="canned-container">
+            <div class="canned-label">Quick Replies</div>
+            <div class="canned-buttons" id="canned-buttons"></div>
+        </div>
+
+        <div class="message-input-area">
+            <div class="input-row">
+                <input type="text" id="message-input" placeholder="Type your message...">
+                <button class="btn-send" id="send-btn">Send</button>
+            </div>
+            <button class="btn-close" id="close-btn">Close Conversation</button>
+        </div>
+    </div>
+</div>
+
+<div class="logs-panel">
+    <div class="logs-header">
+        <h2>⚡ System Logs</h2>
+    </div>
+    <textarea id="logs" readonly></textarea>
+</div>
+
+<script>
+    // --- Global Variables and DOM Elements ---
+    let stompClient = null;
+    let currentAgentId = null;
+    let currentConvoId = null;
+    let currentCustomerName = null;
+    const logs = document.getElementById('logs');
+    const messageList = document.getElementById('message-list');
+    const cannedButtonsContainer = document.getElementById('canned-buttons');
+    const customerContextModal = document.getElementById('customerContextModal');
+    const modalCloseBtn = customerContextModal.getElementsByClassName('close-btn')[0];
+    const modalCustomerName = document.getElementById('modal-customer-name');
+    const modalProfileJson = document.getElementById('modal-profile-json');
+    const modalPastConvoList = document.getElementById('modal-past-convo-list');
+    const customerNameHeader = document.getElementById('customer-name-header');
+
+
+    // --- Utility Functions ---
+    function log(message, type = 'info') {
+        const timestamp = new Date().toLocaleTimeString();
+        logs.value += `[${timestamp}] [${type.toUpperCase()}] ${message}\n`;
+        logs.scrollTop = logs.scrollHeight;
+    }
+
+    function displayMessage(sender, body, isSystem = false) {
+        const senderType = sender.toUpperCase();
+        const container = document.createElement('div');
+        container.className = 'message-row';
+
+        const bubble = document.createElement('div');
+        bubble.className = `msg-bubble ${isSystem ? 'SYSTEM' : senderType}`;
+        bubble.innerText = body;
+
+        if (!isSystem && senderType === 'AGENT') {
+            container.classList.add('msg-agent');
+        }
+
+        container.appendChild(bubble);
+        messageList.appendChild(container);
+        messageList.scrollTop = messageList.scrollHeight;
+    }
+
+    // --- 1. Agent Lifecycle (HTTP/WS) ---
+
+    document.getElementById('register-btn').onclick = async function() {
+        const email = document.getElementById('agent-email').value;
+        const response = await fetch('http://localhost:8080/api/agent/register', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ email: email, role: "AGENT" })
+        });
+        if (!response.ok) { log(`Registration failed: ${response.status}`, 'error'); return; }
+
+        const agent = await response.json();
+        currentAgentId = agent.id;
+        document.getElementById('agent-id').innerText = `Agent ID: ${currentAgentId}`;
+        log(`Registered successfully. Agent ID: ${currentAgentId}`, 'success');
+
+        document.getElementById('register-panel').style.display = 'none';
+        document.getElementById('status-display').style.display = 'block';
+
+        connectWebSocket();
+        fetchCannedMessages();
+    }
+
+    document.getElementById('logout-btn').onclick = async function() {
+        if (stompClient && stompClient.connected) stompClient.disconnect();
+
+        const response = await fetch(`http://localhost:8080/api/agent/logout/${currentAgentId}`, { method: 'POST' });
+        if (response.ok) {
+            log("Logged out successfully.", 'success');
+            document.getElementById('agent-status-badge').className = 'status-badge offline';
+            document.getElementById('agent-status-badge').innerText = '● OFFLINE';
+            document.getElementById('register-panel').style.display = 'block';
+            document.getElementById('status-display').style.display = 'none';
+        } else {
+            log("Logout failed in DB.", 'error');
+        }
+    }
+
+    function connectWebSocket() {
+        stompClient = Stomp.client("ws://localhost:8080/ws-connect");
+        stompClient.connect(
+            { "login": currentAgentId },
+            (frame) => {
+                log("WebSocket Connected!", 'success');
+                const privateTopic = `/topic/agent/${currentAgentId}`;
+                stompClient.subscribe(privateTopic, onAssignmentReceived);
+            },
+            (error) => { log(`WebSocket Connection Error: ${error}`, 'error'); }
+        );
+    }
+
+    // --- 2. Assignment and Handshake Logic ---
+
+    function onAssignmentReceived(message) {
+        log("--- NEW ASSIGNMENT RECEIVED ---", 'msg');
+        const notification = JSON.parse(message.body);
+        currentConvoId = notification.conversationId;
+        currentCustomerName = notification.participantName;
+
+        log(`Assigned to new chat: ${currentConvoId}`);
+
+        document.getElementById('waiting-state').style.display = 'none';
+        document.getElementById('chat-container').classList.add('active');
+        customerNameHeader.innerText = currentCustomerName;
+        document.getElementById('convo-id').innerText = currentConvoId;
+        messageList.innerHTML = '';
+
+        // Fetch context and subscribe
+        fetchCustomerContext(currentConvoId);
+        subscribeToChatRoom(currentConvoId);
+    }
+
+    function subscribeToChatRoom(convoId) {
+        const topic = `/topic/conversation/${convoId}`;
+        stompClient.subscribe(topic, onChatMessageReceived);
+    }
+
+    function onChatMessageReceived(message) {
+        const parsedBody = JSON.parse(message.body);
+
+        if (parsedBody.body) {
+            displayMessage(parsedBody.senderType, parsedBody.body);
+        } else if (parsedBody.message) { // ChatCloseEvent
+            displayMessage('SYSTEM', parsedBody.message, true);
+            document.getElementById('chat-container').classList.remove('active');
+            document.getElementById('waiting-state').style.display = 'flex';
+            document.getElementById('context-panel').classList.remove('active');
+        }
+    }
+
+    // --- 3. Core Chat Actions ---
+
+    document.getElementById('send-btn').onclick = function() {
+        const messageInput = document.getElementById('message-input');
+        const message = messageInput.value;
+        if (!message) return;
+        const destination = `/app/chat/send/${currentConvoId}`;
+
+        stompClient.send(destination, {}, JSON.stringify({ body: message }));
+        messageInput.value = '';
+    }
+
+    document.getElementById('message-input').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            document.getElementById('send-btn').click();
+        }
+    });
+
+    document.getElementById('close-btn').onclick = function() {
+        const destination = `/app/chat/close/${currentConvoId}`;
+        stompClient.send(destination);
+        log(`Sending CLOSE command to: ${destination}`);
+    }
+
+    // --- 4. Canned Messages (Req #8) ---
+    async function fetchCannedMessages() {
+        const response = await fetch('http://localhost:8080/api/canned-messages');
+        if (!response.ok) { log("Failed to fetch canned messages.", 'error'); return; }
+
+        const messages = await response.json();
+        cannedButtonsContainer.innerHTML = '';
+
+        messages.forEach(msg => {
+            const button = document.createElement('button');
+            button.className = 'canned-btn';
+            button.innerText = msg.shortcut;
+            button.onclick = () => {
+                document.getElementById('message-input').value = msg.text;
+            };
+            cannedButtonsContainer.appendChild(button);
+        });
+    }
+
+    // --- 5. Context Modal and Search (Req #5, #6) ---
+
+    // Function to fetch and populate the modal
+    async function fetchCustomerContext(convoId) {
+        const response = await fetch(`http://localhost:8080/api/chat/${convoId}/context`);
+
+        modalPastConvoList.innerHTML = '';
+        modalProfileJson.innerText = "Loading...";
+
+        if (!response.ok) {
+            modalProfileJson.innerText = "ERROR: Could not retrieve context from API.";
+            return;
+        }
+
+        const context = await response.json();
+
+        // --- 1. Display Profile JSON (Req #6) ---
+        const profileData = context.customerContextJson;
+        modalProfileJson.innerText =
+            profileData ? JSON.stringify(JSON.parse(profileData), null, 2) : "No external profile data.";
+
+        // --- 2. Display Past Chats (Req #7) ---
+        if (context.pastConversations && context.pastConversations.length > 0) {
+            context.pastConversations.forEach(chat => {
+                const item = document.createElement('li');
+                item.className = 'past-chat-item';
+                const idSnippet = chat.conversationId.substring(0, 8);
+                const date = new Date(chat.createdAt).toLocaleDateString();
+
+                item.innerHTML = `
+                    <div><strong>P${chat.urgencyScore}</strong> • ${chat.status}</div>
+                    <div style="font-size: 11px; color: #718096; margin-top: 4px;">
+                        ID: ${idSnippet}... Started: ${date}
+                    </div>
+                `;
+                modalPastConvoList.appendChild(item);
+            });
+        } else {
+            const item = document.createElement('li');
+            item.innerText = "No past conversations found.";
+            modalPastConvoList.appendChild(item);
+        }
+
+        // Show the customer's name in the modal header
+        modalCustomerName.innerText = currentCustomerName;
+    }
+
+    // Click handler for the customer's name in the header
+    customerNameHeader.onclick = function() {
+        if(currentConvoId) {
+            // The context is fetched automatically on assignment, just show the modal
+            customerContextModal.style.display = "block";
+        }
+    }
+
+    // Modal Close Logic
+    modalCloseBtn.onclick = function() {
+        customerContextModal.style.display = "none";
+    }
+
+    // Close the modal if the user clicks anywhere outside of it
+    window.onclick = function(event) {
+        if (event.target == customerContextModal) {
+            customerContextModal.style.display = "none";
+        }
+    }
+
+    // --- 6. Search Logic ---
+    document.getElementById('search-btn').onclick = async function() {
+        const query = document.getElementById('search-input').value;
+        const searchResultsArea = document.getElementById('search-results');
+        if (query.length < 3) { searchResultsArea.value = "Enter at least 3 characters."; return; }
+
+        const response = await fetch(`http://localhost:8080/api/search?q=${query}`);
+        if (!response.ok) { searchResultsArea.value = "Search failed."; return; }
+
+        const results = await response.json();
+        let output = `Found ${results.results.length} results:\n\n`;
+        results.results.forEach(item => {
+            const date = new Date(item.createdAt).toLocaleDateString();
+            output += `[${item.type}] ${item.text.substring(0, 50)}... (${date})\n\n`;
+        });
+        searchResultsArea.value = output;
+    }
+</script>
+</body>
+</html>
