@@ -399,6 +399,9 @@
         }
     </style>
 </head>
+
+
+
 <body>
 
 <div class="container">
@@ -437,7 +440,7 @@
             <!-- Step 2: Start Chat -->
             <div id="start-chat-panel" style="display: none;">
                 <div class="success-message" id="connection-success">
-                    ✓ Connected successfully! You can now start a chat with our support team.
+                    ✅ Connected successfully! You can now start a chat with our support team.
                 </div>
 
                 <div class="section">
@@ -504,8 +507,6 @@
     </div>
 </div>
 
-
-
 <script>
     let stompClient = null;
     let currentCustomerId = null;
@@ -515,11 +516,11 @@
     function log(message, type = 'info') {
         const timestamp = new Date().toLocaleTimeString();
         const icon = {
-            'info': 'ℹ',
-            'success': '✓',
-            'error': '✗',
-            'msg': '→'
-        }[type] || 'ℹ';
+            'info': 'â„¹',
+            'success': 'âœ“',
+            'error': 'âœ—',
+            'msg': 'â†’'
+        }[type] || 'â„¹';
 
         logs.value += `[${timestamp}] ${icon} [${type.toUpperCase()}] ${message}\n`;
         logs.scrollTop = logs.scrollHeight;
@@ -537,7 +538,7 @@
         bubble.innerText = body;
 
         if (isSystem) {
-            bubble.innerText = `— ${body} —`;
+            bubble.innerText = `â€” ${body} â€”`;
         } else if (senderType === 'CUSTOMER') {
             container.classList.add('msg-customer');
         }
@@ -629,7 +630,7 @@
 
     // Step 3: Handle Agent Assignment
     function onAssignmentReceived(message) {
-        log("═══ AGENT ASSIGNED ═══", 'success');
+        log("â•â•â• AGENT ASSIGNED â•â•â•", 'success');
         const notification = JSON.parse(message.body);
         currentConvoId = notification.conversationId;
 
@@ -689,5 +690,6 @@
     log('Customer Portal initialized', 'info');
     log('Please register to begin', 'info');
 </script>
+
 </body>
 </html>
